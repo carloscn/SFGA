@@ -178,7 +178,7 @@
       <item row="0" column="0">
        <widget class="QPushButton" name="pushButton_warning">
         <property name="text">
-         <string>报警警告</string>
+         <string>语音喊话</string>
         </property>
        </widget>
       </item>

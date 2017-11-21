@@ -25,7 +25,7 @@
 #  @Revision   : Ver 1.0.                                                  #
 #  @Data       : 2017.08.31 Realse.                                        #
 #  @Belong     : PROJECT.                                                  #
-#  @Git		   : https://gitlab.com/coarlqq/safeGuardForAutoSale.git       #
+#  @Git	       : https://github.com/lifimlt/SFGA.git                       #
 #  **code : (UTF-8) in Raspbian(x64). 					                   #
 #**************************************************************************#
 #  @Attention:                                                             #
