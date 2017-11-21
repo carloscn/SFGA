@@ -95,6 +95,7 @@ CMD_ID_CONFIRM		= 	0x03
 CMD_ID_CONFIRM_NO		=	0x04
 CMD_ID_CONFIRM_YES		=	0x05
 CMD_ID_STOP_WARN		=   0x06
+CMD_RECOVERY_CHECK		= 	0x07
 
 # Define global value in project
 cmdBuffer = []
@@ -116,8 +117,8 @@ camera.vflip = True
 
 #def Technology open lock flag
 global_id_confirm_flag = False
-
-
+#request the id confirm.
+UartSendCmd(CMD_ID_CONFIRM)
 # Init Sensors
 vibSensorA0Channel = 5
 vibSensorA1Channel = 6
@@ -132,7 +133,7 @@ bool_vibSensor1State = False
 bool_vibSensor2State = False
 bool_vibSensor3State = False
 bool_vibSensorDoorCheck = False
-bool_idChecked = False
+bool_alarm_signal_remove = True
 
 
 GPIO.setmode( GPIO.BCM )
@@ -250,33 +251,37 @@ def SensorA3CallBackEvent( channel ):
 	print("Detected the A3 OK")
 GPIO.add_event_detect( vibSensorA3Channel, GPIO.FALLING, callback = SensorA3CallBackEvent )
 # _/\_________________________________________________ The Function end.
-
+alarmCounter = 0
 def SensorDoorOpenCheckEvent( channel ):
 
 	global bool_vibSensorDoorCheck
-	global bool_idChecked
+	global global_id_confirm_flag
+	global bool_alarm_signal_remove
+	global alarmCounter 
 
 	bool_vibSensorDoorCheck = True
+	print("SYSTEM: Door has been opened! \n")
+	print("SYSTEM: Check the APP cmd state permission.... \n")
+	if bool_alarm_signal_remove == True: 
 
-	print("Door has change! \n")
-	if global_id_confirm_flag == True:
-		print("The door has been open, and the id information has been detected.\n")
-	elif global_id_confirm_flag == False:
-		print("The door has been open ,but the id information no detected, the system will alarm. \n")
-		CallTheHost()
-		UartSendCmd( CMD_THEFT_CHECKED )
-		PlayTheAlaAudio()
-		GPIO.output( vibSensorAlarmLight, GPIO.HIGH )
-	# check the id.
-	if bool_idChecked == True:
-		print("id has been passed .");
-	elif bool_idChecked == False:
-		print("warning: the id not passed this is not");
-		UartSendCmd( CMD_THEFT_CHECKED )
-		PlayTheAlaAudio()
-		GPIO.output( vibSensorAlarmLight, GPIO.HIGH )
+		print("SYSTEM: checked!! \n")
+		if global_id_confirm_flag == True:
+			print("SYSTEM:The door has been open, and the id information has been detected.\n")
+		elif global_id_confirm_flag == False:
+			if alarmCounter == 0:
+				print("SYSTEM:The door has been open ,but the id information no detected, the system will alarm. \n")
+				CallTheHost()
+				UartSendCmd( CMD_THEFT_CHECKED )
+				PlayTheAlaAudio()
+				GPIO.output( vibSensorAlarmLight, GPIO.HIGH )
+				alarmCounter = alarmCounter + 1
+			else :
+				print("SYSTEM: The door triggered again by the user... notice !! \n ");	
+		# check the id.
+		print( "SYSTEM: Door is opened." )
+	else:
+		print("SYSTEM: The APP refused the alarmed, if you want to alarm please click the botton of recovery.. \n")
 
-	print( "Door is opened." )
 GPIO.add_event_detect( vibSensorDoorCheck, GPIO.RISING, callback = SensorDoorOpenCheckEvent )
 # _/\_________________________________________________ The Function end.
 
@@ -342,6 +347,7 @@ def ComProtocalProcess( cmd ):
 	# if the cmd is idConfirm, wait the information.
 	if cmd == CMD_ID_CONFIRM:
 		bool_id_pass = True
+
 # _/\_________________________________________________ The Function end.
 
 
@@ -412,8 +418,10 @@ def ScanUartDatas( serial ):
 	global cmdBuffer
 	global bool_id_pass
 	global global_id_confirm_flag
-        global gprsPort
-        global pygame
+    global gprsPort
+    global bool_alarm_signal_remove
+    global pygame
+    global alarmCounter
 
 	plo = 0
 	rec_a_data = serial.read(1)
@@ -438,35 +446,27 @@ def ScanUartDatas( serial ):
 		elif cmd_v == CMD_ID_CONFIRM_YES:
 			bool_id_pass = True
 			global_id_confirm_flag = True
-			if bool_id_pass == True :
-				bool_id_pass = False
-			elif bool_id_pass == False :
-				bool_id_pass = True
-
-			if global_id_confirm_flag == True:
-				global_id_confirm_flag = False
-			elif global_id_confirm_flag == False:
-				global_id_confirm_flag = True
-
-			print( "Confirm Changed!\n" )
-			rxBuffer = []
+			print( "SYSTEM: The system recived the a4d5sjsdf6556x checked code. " )
+			print( "SYSTEM: The system pass the APP checked. \n" )
+			rxBuffer = []d
 
 		elif cmd_v == CMD_ID_CONFIRM_NO:
 
 			bool_id_pass = False
 			global_id_confirm_flag = False
-			print( "Confirm Fail!!!\n" )
+			print( "SYSTEM: The system will close the id. \n " )
 			rxBuffer = []
 
 		elif cmd_v == CMD_ID_STOP_WARN:
-
-                        print( "The user cancel the alarm.... \n" )
-                        GPIO.output( vibSensorAlarmLight, GPIO.LOW )
-                        print( "The AlarmLight closed..... \n" )
-                        gprsPort.write( at_cmd_string_hangoutdial )
-                        print( "HangoutHost AT CMD has been send.....\n" )
-                        pygame.mixer.music.stop()
-                        print( "The system has been close the audio..... \n" )
+			bool_alarm_signal_remove = false
+			alarmCounter = 0
+            print( "The user cancel the alarm.... \n" )
+            GPIO.output( vibSensorAlarmLight, GPIO.LOW )
+            print( "The AlarmLight closed..... \n" )
+            gprsPort.write( at_cmd_string_hangoutdial )
+            print( "HangoutHost AT CMD has been send.....\n" )
+            pygame.mixer.music.stop()
+            print( "The system has been close the audio..... \n" )
 
 			rxBuffer = []
 
@@ -474,6 +474,9 @@ def ScanUartDatas( serial ):
 
 			PlayTheToneAudio()
 			rxBuffer = []
+
+		elif cmd_v == CMD_RECOVERY_CHECK:
+			bool_alarm_signal_remove = True
 
 		rxBuffer = []
 		cmd_s = []

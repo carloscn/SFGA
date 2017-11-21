@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>446</width>
-    <height>1018</height>
+    <height>924</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -174,34 +174,52 @@
      <property name="title">
       <string>控制区域：</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QPushButton" name="pushButton_warning">
-        <property name="text">
-         <string>语音喊话</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="pushButton_readImage">
-        <property name="text">
-         <string>读取图像</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QPushButton" name="pushButton_id">
-        <property name="text">
-         <string>身份认证</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="pushButton_clear">
-        <property name="text">
-         <string>清除报警状态</string>
-        </property>
-       </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButton_id">
+          <property name="text">
+           <string>身份认证</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QPushButton" name="pushButton_idx">
+          <property name="text">
+           <string>身份认证取消</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="pushButton_readImage">
+          <property name="text">
+           <string>读取图像</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="pushButton_warning">
+          <property name="text">
+           <string>语音喊话</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QPushButton" name="pushButton_clear">
+          <property name="text">
+           <string>清除报警状态</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QPushButton" name="pushButton_recovery_check">
+          <property name="text">
+           <string>恢复检测</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>

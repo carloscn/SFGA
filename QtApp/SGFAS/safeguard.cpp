@@ -279,7 +279,7 @@ void SafeGuard::on_pushButton_readImage_clicked()
 
 void SafeGuard::on_pushButton_id_clicked()
 {
-    SendCmdToRaspi( CMD_ID_CONFIRM );
+    SendCmdToRaspi( CMD_ID_CONFIRM_YES );
 }
 
 
@@ -336,3 +336,13 @@ void SafeGuard::on_pushButton_warning_clicked()
     SendCmdToRaspi( CMD_ALARM );
 }
 
+
+void SafeGuard::on_pushButton_idx_clicked()
+{
+    SendCmdToRaspi( CMD_ID_CONFIRM_NO );
+}
+
+void SafeGuard::on_pushButton_recovery_check_clicked()
+{
+    SendCmdToRaspi( CMD_ID_CONFIRM_NO );
+}

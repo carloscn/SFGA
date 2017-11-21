@@ -85,6 +85,10 @@ private slots:
 
     void on_pushButton_warning_clicked();
 
+    void on_pushButton_idx_clicked();
+
+    void on_pushButton_recovery_check_clicked();
+
 private:
 
     Ui::SafeGuard *ui;
