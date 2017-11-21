@@ -344,5 +344,5 @@ void SafeGuard::on_pushButton_idx_clicked()
 
 void SafeGuard::on_pushButton_recovery_check_clicked()
 {
-    SendCmdToRaspi( CMD_ID_CONFIRM_NO );
+    SendCmdToRaspi( CMD_RECOVERY_CHECK );
 }
