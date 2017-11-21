@@ -118,7 +118,7 @@ camera.vflip = True
 #def Technology open lock flag
 global_id_confirm_flag = False
 #request the id confirm.
-UartSendCmd(CMD_ID_CONFIRM)
+#UartSendCmd(CMD_ID_CONFIRM)
 # Init Sensors
 vibSensorA0Channel = 5
 vibSensorA1Channel = 6
@@ -418,10 +418,10 @@ def ScanUartDatas( serial ):
 	global cmdBuffer
 	global bool_id_pass
 	global global_id_confirm_flag
-    global gprsPort
-    global bool_alarm_signal_remove
-    global pygame
-    global alarmCounter
+        global gprsPort
+        global bool_alarm_signal_remove
+        global pygame
+        global alarmCounter
 
 	plo = 0
 	rec_a_data = serial.read(1)
@@ -448,7 +448,7 @@ def ScanUartDatas( serial ):
 			global_id_confirm_flag = True
 			print( "SYSTEM: The system recived the a4d5sjsdf6556x checked code. " )
 			print( "SYSTEM: The system pass the APP checked. \n" )
-			rxBuffer = []d
+			rxBuffer = []
 
 		elif cmd_v == CMD_ID_CONFIRM_NO:
 
@@ -458,24 +458,25 @@ def ScanUartDatas( serial ):
 			rxBuffer = []
 
 		elif cmd_v == CMD_ID_STOP_WARN:
-			bool_alarm_signal_remove = false
+			bool_alarm_signal_remove = False
 			alarmCounter = 0
-            print( "The user cancel the alarm.... \n" )
-            GPIO.output( vibSensorAlarmLight, GPIO.LOW )
-            print( "The AlarmLight closed..... \n" )
-            gprsPort.write( at_cmd_string_hangoutdial )
-            print( "HangoutHost AT CMD has been send.....\n" )
-            pygame.mixer.music.stop()
-            print( "The system has been close the audio..... \n" )
+                        print( "The user cancel the alarm.... \n" )
+                        GPIO.output( vibSensorAlarmLight, GPIO.LOW )
+                        print( "The AlarmLight closed..... \n" )
+                        gprsPort.write( at_cmd_string_hangoutdial )
+                        print( "HangoutHost AT CMD has been send.....\n" )
+                        pygame.mixer.music.stop()
+                        print( "The system has been close the audio..... \n" )
 
 			rxBuffer = []
 
 		elif cmd_v == CMD_ALARM:
-
+                        print("SYSTEM: The APP CMD is tone play. \n")
 			PlayTheToneAudio()
 			rxBuffer = []
 
 		elif cmd_v == CMD_RECOVERY_CHECK:
+                        print("SYSTEM: The APP CMD is recovery the check..\n");
 			bool_alarm_signal_remove = True
 
 		rxBuffer = []
