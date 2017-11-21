@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>java/ExtendsQtWithJava.java</file>
+        <file>java/JavaTest.java</file>
+        <file>java/WifiUtil.java</file>
+    </qresource>
+</RCC>
