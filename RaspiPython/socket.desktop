@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Version=0.9.4
+Name=Run The Python
+Comment=
+Icon=/home/pi/script/SFGA/RaspiPython/ico/name.ico
+Exec=/home/pi/script/SFGA/RaspiPython/run.sh
+Terminal=true
