@@ -81,7 +81,7 @@ import sys, subprocess, urllib
 #please modify your phone number.
 
 # SIM800 Module
-at_cmd_string_dialnumber = "ATD+8618300041052\r\n"
+at_cmd_string_dialnumber = "ATD+8613130286058\r\n"
 at_cmd_string_hangoutdial = "ATH\r\n"
 
 # Define a data array.
@@ -180,7 +180,7 @@ def CallTheHost( ):
 	global hangoutThread
 
 	gprsPort.write( at_cmd_string_dialnumber )
-    print( "The system start call the host.  \n" )
+        print( "The system start call the host.  \n" )
 	# hangoutThread.start()
 
 
@@ -277,7 +277,7 @@ def SensorDoorOpenCheckEvent( channel ):
 		GPIO.output( vibSensorAlarmLight, GPIO.HIGH )
 
 	print( "Door is opened." )
-GPIO.add_event_detect( vibSensorDoorCheck, GPIO.FALLING, callback = SensorDoorOpenCheckEvent )
+GPIO.add_event_detect( vibSensorDoorCheck, GPIO.RISING, callback = SensorDoorOpenCheckEvent )
 # _/\_________________________________________________ The Function end.
 
 # New Thread 1Hz checked
@@ -307,7 +307,7 @@ def CheckTheVibSensorsState() :
 		int_subState = int_subState + 1
 		bool_vibSensor3State = False
 	# Any two sensors are actived.
-	if int_subState > 1:
+	if int_subState > 5:
 		print("The vib sensors triggered, the alarm behavior start....\n")
 		UartSendCmd( CMD_THEFT_CHECKED )
 		PlayTheAlaAudio()
@@ -412,6 +412,8 @@ def ScanUartDatas( serial ):
 	global cmdBuffer
 	global bool_id_pass
 	global global_id_confirm_flag
+        global gprsPort
+        global pygame
 
 	plo = 0
 	rec_a_data = serial.read(1)
@@ -458,13 +460,13 @@ def ScanUartDatas( serial ):
 
 		elif cmd_v == CMD_ID_STOP_WARN:
 
-            print( "The user cancel the alarm.... \n" )
-            GPIO.output( vibSensorAlarmLight, GPIO.LOW )
-            print( "The AlarmLight closed..... \n" )
-            gprsPort.write( at_cmd_string_hangoutdial )
-            print( "HangoutHost AT CMD has been send.....\n" )
-            pygame.mixer.music.stop()
-            print( "The system has been close the audio..... \n" )
+                        print( "The user cancel the alarm.... \n" )
+                        GPIO.output( vibSensorAlarmLight, GPIO.LOW )
+                        print( "The AlarmLight closed..... \n" )
+                        gprsPort.write( at_cmd_string_hangoutdial )
+                        print( "HangoutHost AT CMD has been send.....\n" )
+                        pygame.mixer.music.stop()
+                        print( "The system has been close the audio..... \n" )
 
 			rxBuffer = []
 
