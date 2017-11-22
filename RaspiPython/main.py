@@ -224,7 +224,7 @@ def UartSendCmd( cmd ):
 def SensorA0CallBackEvent( channel ):
 	global bool_vibSensor0State
 	bool_vibSensor0State = True
-	print("Detected the A0 OK")
+	print("SYSTEM: Detected the A0 VIB sensor is triggered by user...")
 GPIO.add_event_detect( vibSensorA0Channel, GPIO.FALLING, callback = SensorA0CallBackEvent )
 # _/\_________________________________________________ The Function end.
 #
@@ -232,7 +232,7 @@ def SensorA1CallBackEvent( channel ):
 
 	global bool_vibSensor1State
 	bool_vibSensor1State = True
-	print("Detected the A1 OK")
+	print("SYSTEM: Detected the A1 VIB sensor is triggered by user...")
 GPIO.add_event_detect( vibSensorA1Channel, GPIO.FALLING, callback = SensorA1CallBackEvent )
 # _/\_________________________________________________ The Function end.
 #
@@ -240,7 +240,7 @@ def SensorA2CallBackEvent( channel ):
 
 	global bool_vibSensor2State
 	bool_vibSensor2State = True
-	print("Detected the A2 OK")
+	print("SYSTEM: Detected the A2 VIB sensor is triggered by user...")
 GPIO.add_event_detect( vibSensorA2Channel, GPIO.FALLING, callback = SensorA2CallBackEvent )
 # _/\_________________________________________________ The Function end.
 #
@@ -248,7 +248,7 @@ def SensorA3CallBackEvent( channel ):
 
 	global bool_vibSensor3State
 	bool_vibSensor3State = True
-	print("Detected the A3 OK")
+	print("SYSTEM: Detected the A3 VIB sensor is triggered by user...")
 GPIO.add_event_detect( vibSensorA3Channel, GPIO.FALLING, callback = SensorA3CallBackEvent )
 # _/\_________________________________________________ The Function end.
 alarmCounter = 0
@@ -257,32 +257,37 @@ def SensorDoorOpenCheckEvent( channel ):
 	global bool_vibSensorDoorCheck
 	global global_id_confirm_flag
 	global bool_alarm_signal_remove
-	global alarmCounter 
+	global alarmCounter
 
 	bool_vibSensorDoorCheck = True
 	print("SYSTEM: Door has been opened! \n")
 	print("SYSTEM: Check the APP cmd state permission.... \n")
-	if bool_alarm_signal_remove == True: 
+	if bool_alarm_signal_remove == True:
 
-		print("SYSTEM: checked!! \n")
+		print("SYSTEM: checked!!")
 		if global_id_confirm_flag == True:
-			print("SYSTEM:The door has been open, and the id information has been detected.\n")
+			print("SYSTEM: The id information has been detected, and system don't do nothing...\n")
 		elif global_id_confirm_flag == False:
 			if alarmCounter == 0:
-				print("SYSTEM:The door has been open ,but the id information no detected, the system will alarm. \n")
+				print("SYSTEM:The id information no detected, the system will alarm.....WARNING,WARNING,WARNING... \n")
 				CallTheHost()
 				UartSendCmd( CMD_THEFT_CHECKED )
 				PlayTheAlaAudio()
 				GPIO.output( vibSensorAlarmLight, GPIO.HIGH )
 				alarmCounter = alarmCounter + 1
 			else :
-				print("SYSTEM: The door triggered again by the user... notice !! \n ");	
+				print("SYSTEM: The door triggered again by the user, but system current not allowed alarm.. !! \n ");
 		# check the id.
 		print( "SYSTEM: Door is opened." )
 	else:
 		print("SYSTEM: The APP refused the alarmed, if you want to alarm please click the botton of recovery.. \n")
 
 GPIO.add_event_detect( vibSensorDoorCheck, GPIO.RISING, callback = SensorDoorOpenCheckEvent )
+
+
+def SensorDoorCloseCheckEvent( channel ):
+    print( "SYSTEM: The system capture the door closed by user... \n" )
+GPIO.add_event_detect( vibSensorDoorCheck, GPIO.FALLING, callback = SensorDoorCloseCheckEvent )
 # _/\_________________________________________________ The Function end.
 
 # New Thread 1Hz checked
@@ -294,6 +299,8 @@ def CheckTheVibSensorsState() :
 	global bool_vibSensor2State
 	global bool_vibSensor3State
 	global checkSensorThread
+    global bool_alarm_signal_remove
+    
 	int_subState = 0
 
 	if bool_vibSensor0State == True:
@@ -313,11 +320,16 @@ def CheckTheVibSensorsState() :
 		bool_vibSensor3State = False
 	# Any two sensors are actived.
 	if int_subState > 5:
-		print("The vib sensors triggered, the alarm behavior start....\n")
-		UartSendCmd( CMD_THEFT_CHECKED )
-		PlayTheAlaAudio()
-		CallTheHost()
-
+        print( "SYSTEM: The vib sensors are enabled, and system checking the APP wether permission..." )
+        if bool_alarm_signal_remove == False:
+            print("SYSTEM : APP said YES.... ")
+    		print("SYSTEM : The vib sensors triggered and APP pass it, the alarm behavior start....\n")
+    		UartSendCmd( CMD_THEFT_CHECKED )
+    		PlayTheAlaAudio()
+    		CallTheHost()
+    	    GPIO.output( vibSensorAlarmLight, GPIO.HIGH )
+        elif:
+            print("APP said No, if you want to enable vib alarm function, you should click recovery check on your phone. \n")
 	# Initial the all sensor flag states.
 	bool_vibSensor0State = False
 	bool_vibSensor1State = False
