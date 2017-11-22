@@ -157,14 +157,7 @@ def CheckTheDoorState() :
 		print("SYSTE : The door is closed...\n")
 		return True
 
-
-
-if GPIO.input( vibSensorDoorCheck ):
-
-	bool_door_closed = False
-else :
-
-	bool_door_closed = True
+bool_door_closed = CheckTheDoorState()
 
 def CallTheHost( ):
 
@@ -279,7 +272,7 @@ def SensorDoorOpenCheckEvent( channel ):
 				print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
 				print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
 				print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-				print("############################################################################################################ \n"
+				print("############################################################################################################ \n")
 				alarmCounter = alarmCounter + 1
 			else :
 				print("SYSTEM: The door triggered again by the user, but system current not allowed alarm.. !! \n ")
@@ -291,11 +284,6 @@ def SensorDoorOpenCheckEvent( channel ):
 GPIO.add_event_detect( vibSensorDoorCheck, GPIO.RISING, callback = SensorDoorOpenCheckEvent )
 
 
-def SensorDoorCloseCheckEvent( channel ):
-
-	print( "SYSTEM: The system capture the door closed by user... \n" )
-
-GPIO.add_event_detect( vibSensorDoorCheck, GPIO.FALLING, callback = SensorDoorCloseCheckEvent )
 # _/\_________________________________________________ The Function end.
 
 # New Thread 1Hz checked
@@ -328,7 +316,7 @@ def CheckTheVibSensorsState() :
 		bool_vibSensor3State = False
 	# Any two sensors are actived.
 	if int_subState > 5:
-	print( "SYSTEM: The vib sensors are enabled, and system checking the APP wether permission..." )
+	        print( "SYSTEM: The vib sensors are enabled, and system checking the APP wether permission..." )
 	if bool_alarm_signal_remove == False:
 		print("SYSTEM : -> APP said YES.... ")
 		print("SYSTEM : The vib sensors are triggered and APP passed it, the alarm behavior start....\n")
@@ -348,8 +336,6 @@ def CheckTheVibSensorsState() :
 		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
 		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
 		print("############################################################################################################ \n")
-	elif:
-		print(" SYSTEM : -> APP said No, if you want to enable vib alarm function, you should click recovery check on your phone. \n")
 
 	# Initial the all sensor flag states.
 	bool_vibSensor0State = False
@@ -429,7 +415,7 @@ def TransmitThePhotoData():
 
 	print("SYSTEM : The system is transimitting the image data, Notice : Don't do anything in your APP....  \n")
 	imageTarget = open('image.jpg')
-	try:,
+	try:
 		imageIOStream = imageTarget.read()
 	finally:
 		imageTarget.close()
