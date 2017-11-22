@@ -134,7 +134,7 @@ bool_vibSensor2State = False
 bool_vibSensor3State = False
 bool_vibSensorDoorCheck = False
 bool_alarm_signal_remove = True
-
+bool_door_closed = True
 
 GPIO.setmode( GPIO.BCM )
 GPIO.setup( vibSensorA0Channel, GPIO.IN, pull_up_down=GPIO.PUD_DOWN )
@@ -146,12 +146,25 @@ GPIO.setup( vibSensorDoorCheck, GPIO.IN, pull_up_down=GPIO.PUD_DOWN )
 GPIO.setup( vibSensorAlarmLight, GPIO.OUT )
 GPIO.output( vibSensorAlarmLight, GPIO.LOW )
 
-print("SYSTEM : Check the door.... ")
-if GPIO.input( vibSensorDoorCheck ):
-	print("SYSTEM : The door is not close, Please Close the door...\n")
 
+
+def CheckTheDoorState() :
+	print("SYSTEM : Check the door.... ")
+	if GPIO.input( vibSensorDoorCheck ) :
+		print("SYSTEM : The door is not close, Please Close the door...\n")
+		return False
+	else:
+		print("SYSTE : The door is closed...\n")
+		return True
+
+
+
+if GPIO.input( vibSensorDoorCheck ):
+
+	bool_door_closed = False
 else :
-	print("SYSTE : The door is closed...\n")
+
+	bool_door_closed = True
 
 def CallTheHost( ):
 
@@ -159,7 +172,7 @@ def CallTheHost( ):
 	global hangoutThread
 
 	gprsPort.write( at_cmd_string_dialnumber )
-        print( "################SYSTEM : -> The system start call the host.  \n" )
+	print( "################SYSTEM : -> The system start call the host.  \n" )
 	# hangoutThread.start()
 
 def PlayTheToneAudio( ) :
@@ -167,14 +180,14 @@ def PlayTheToneAudio( ) :
 	fileName = "/home/pi/script/a.mp3"
 	pygame.mixer.music.load( fileName )
 	pygame.mixer.music.play( loops = 0, start = 0.0 )
-    	print( "################SYSTEM : -> The system play the tone audio...  \n" )
+	print( "################SYSTEM : -> The system play the tone audio...  \n" )
 
 def PlayTheAlaAudio() :
 
 	fileName = "/home/pi/script/b.mp3"
 	pygame.mixer.music.load( fileName )
 	pygame.mixer.music.play( loops = 5, start = 0.0 )
-    	print( "################SYSTEM : -> The system play the alarm audio....  \n" )
+	print( "################SYSTEM : -> The system play the alarm audio....  \n" )
 
 
 #* Edit by Carlos
@@ -194,7 +207,7 @@ def UartSendCmd( cmd ):
 	cmdBuffer.append( '@' )
 	serialPort.write(cmdBuffer)
 
-    	print( "The system send cmd to APP :" + cmdBuffer + " -> ok \n" )
+	print( "The system send cmd to APP :" + cmdBuffer + " -> ok \n" )
 # _/\_________________________________________________ The Function end.
 
 
@@ -255,18 +268,18 @@ def SensorDoorOpenCheckEvent( channel ):
 				UartSendCmd( CMD_THEFT_CHECKED )
 				PlayTheAlaAudio()
 				GPIO.output( vibSensorAlarmLight, GPIO.HIGH )
-                		print("############################################################################################################ ")
-                		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-                		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-                		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-                		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-                		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-                		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-                		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-                		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-                		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-                		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-                		print("############################################################################################################ \n")
+				print("############################################################################################################ ")
+				print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+				print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+				print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+				print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+				print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+				print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+				print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+				print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+				print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+				print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+				print("############################################################################################################ \n"
 				alarmCounter = alarmCounter + 1
 			else :
 				print("SYSTEM: The door triggered again by the user, but system current not allowed alarm.. !! \n ")
@@ -279,7 +292,9 @@ GPIO.add_event_detect( vibSensorDoorCheck, GPIO.RISING, callback = SensorDoorOpe
 
 
 def SensorDoorCloseCheckEvent( channel ):
-    print( "SYSTEM: The system capture the door closed by user... \n" )
+
+	print( "SYSTEM: The system capture the door closed by user... \n" )
+
 GPIO.add_event_detect( vibSensorDoorCheck, GPIO.FALLING, callback = SensorDoorCloseCheckEvent )
 # _/\_________________________________________________ The Function end.
 
@@ -292,7 +307,7 @@ def CheckTheVibSensorsState() :
 	global bool_vibSensor2State
 	global bool_vibSensor3State
 	global checkSensorThread
-    	global bool_alarm_signal_remove
+	global bool_alarm_signal_remove
 
 	int_subState = 0
 
@@ -313,29 +328,29 @@ def CheckTheVibSensorsState() :
 		bool_vibSensor3State = False
 	# Any two sensors are actived.
 	if int_subState > 5:
-        print( "SYSTEM: The vib sensors are enabled, and system checking the APP wether permission..." )
-        if bool_alarm_signal_remove == False:
-            	print("SYSTEM : -> APP said YES.... ")
-    		print("SYSTEM : The vib sensors are triggered and APP passed it, the alarm behavior start....\n")
-    		UartSendCmd( CMD_THEFT_CHECKED )
-    		PlayTheAlaAudio()
-    		CallTheHost()
-    	    	GPIO.output( vibSensorAlarmLight, GPIO.HIGH )
-           	print("############################################################################################################ ")
-            	print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-            	print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-            	print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-            	print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-            	print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-            	print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-            	print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-            	print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-            	print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-            	print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
-            	print("############################################################################################################ \n")
-        elif:
-            	print(" SYSTEM : -> APP said No, if you want to enable vib alarm function, you should click recovery check on your phone. \n")
-	
+	print( "SYSTEM: The vib sensors are enabled, and system checking the APP wether permission..." )
+	if bool_alarm_signal_remove == False:
+		print("SYSTEM : -> APP said YES.... ")
+		print("SYSTEM : The vib sensors are triggered and APP passed it, the alarm behavior start....\n")
+		UartSendCmd( CMD_THEFT_CHECKED )
+		PlayTheAlaAudio()
+		CallTheHost()
+		GPIO.output( vibSensorAlarmLight, GPIO.HIGH )
+		print("############################################################################################################ ")
+		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+		print("ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ALARM .. ALARM .. ARARM .. ")
+		print("############################################################################################################ \n")
+	elif:
+		print(" SYSTEM : -> APP said No, if you want to enable vib alarm function, you should click recovery check on your phone. \n")
+
 	# Initial the all sensor flag states.
 	bool_vibSensor0State = False
 	bool_vibSensor1State = False
@@ -394,7 +409,7 @@ def UartSendIOStream( ioStream ):
 
 
 def GetPhotoFromCamera():
-	
+
 	global camera
 	global bool_newPhoto
 	global rawCapture
@@ -414,7 +429,7 @@ def TransmitThePhotoData():
 
 	print("SYSTEM : The system is transimitting the image data, Notice : Don't do anything in your APP....  \n")
 	imageTarget = open('image.jpg')
-	try:
+	try:,
 		imageIOStream = imageTarget.read()
 	finally:
 		imageTarget.close()
@@ -437,10 +452,10 @@ def ScanUartDatas( serial ):
 	global cmdBuffer
 	global bool_id_pass
 	global global_id_confirm_flag
-    	global gprsPort
-    	global bool_alarm_signal_remove
-    	global pygame
-    	global alarmCounter
+	global gprsPort
+	global bool_alarm_signal_remove
+	global pygame
+	global alarmCounter
 
 	plo = 0
 	rec_a_data = serial.read(1)
@@ -458,7 +473,7 @@ def ScanUartDatas( serial ):
 		cmd_v = int( str( binascii.b2a_hex( cmd ) ) )
 
 		if cmd_v == CMD_GET_IMAGE:
-            		print( "SYSTEM : NOW ,the system recieved get picture command, preparing .... \n" )
+			print( "SYSTEM : NOW ,the system recieved get picture command, preparing .... \n" )
 			GetPhotoFromCamera()
 			TransmitThePhotoData()
 			rxBuffer = []
@@ -483,24 +498,24 @@ def ScanUartDatas( serial ):
 
 			bool_alarm_signal_remove = False
 			alarmCounter = 0
-            		print( "The user cancel the alarm.... \n" )
-            		GPIO.output( vibSensorAlarmLight, GPIO.LOW )
-            		print( "The AlarmLight closed..... \n" )
-            		gprsPort.write( at_cmd_string_hangoutdial )
-            		print( "HangoutHost AT CMD has been send.....\n" )
-            		pygame.mixer.music.stop()
-            		print( "The system has been close the audio..... \n" )
+			print( "The user cancel the alarm.... \n" )
+			GPIO.output( vibSensorAlarmLight, GPIO.LOW )
+			print( "The AlarmLight closed..... \n" )
+			gprsPort.write( at_cmd_string_hangoutdial )
+			print( "HangoutHost AT CMD has been send.....\n" )
+			pygame.mixer.music.stop()
+			print( "The system has been close the audio..... \n" )
 			rxBuffer = []
 
 		elif cmd_v == CMD_ALARM:
-            		print("SYSTEM: The APP CMD is tone play. \n")
+			print("SYSTEM: The APP CMD is tone play. \n")
 			PlayTheToneAudio()
 			rxBuffer = []
 
 		elif cmd_v == CMD_RECOVERY_CHECK:
-            		print("SYSTEM: The APP CMD is recovery the check..\n");
+			print("SYSTEM: The APP CMD is recovery the check..\n");
 			bool_alarm_signal_remove = True
-        		#end of if
+			#end of if
 
 		rxBuffer = []
 		cmd_s = []
