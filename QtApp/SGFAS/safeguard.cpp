@@ -210,36 +210,48 @@ void SafeGuard::readBluetoothDataEvent()
                 qDebug() << " Rec cmd:" << t_cmd;
                 switch( t_cmd ) {
 
-                case CMD_ID_CONFIRM:
+                    case CMD_ID_CONFIRM: {
 
-                    QMessageBox::StandardButton reply;
-                    // 弹出身份确认按钮，并获得用户的选择
-                    reply = QMessageBox::question(NULL, "认证身份确认", "设备请求确认身份，确认吗？", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-                    // 如果选择Yes 身份确认通过之后，将允许信息发送给树莓派，交给树莓派处理
-                    if( reply == QMessageBox::Yes ) {
-                        // 如果选择No 身份没有认定，将信息发送给树莓派，让树莓派来处理
-                        SendCmdToRaspi( CMD_ID_CONFIRM_YES );
-                    }else {
-                        SendCmdToRaspi( CMD_ID_CONFIRM_NO );
+                        QMessageBox::StandardButton reply;
+                        // 弹出身份确认按钮，并获得用户的选择
+                        reply = QMessageBox::question(NULL, "认证身份确认", "设备请求确认身份，确认吗？", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+                        // 如果选择Yes 身份确认通过之后，将允许信息发送给树莓派，交给树莓派处理
+                        if( reply == QMessageBox::Yes ) {
+                            // 如果选择No 身份没有认定，将信息发送给树莓派，让树莓派来处理
+                            SendCmdToRaspi( CMD_ID_CONFIRM_YES );
+                        }else {
+                            SendCmdToRaspi( CMD_ID_CONFIRM_NO );
+                        }
+                        rxString.clear();
+                        rxDataBuffer->clear();
+                        array.clear();
+                        rxArray.clear();
+                        break;
                     }
-                    rxString.clear();
-                    rxDataBuffer->clear();
-                    array.clear();
-                    rxArray.clear();
-                    break;
+                    case CMD_THEFT_CHECKED: {
 
-                case CMD_THEFT_CHECKED:
+                        QMessageBox::warning(this,"Warring","设备检测到盗窃行为！");
+                        QPalette pal = ui->pushButton_alartLed->palette();
+                        pal.setColor( QPalette::Window,QColor(255,0,0) );
+                        ui->pushButton_alartLed->setPalette(pal);
+                        ui->label_stateText->setText("有人盗窃....");
+                        rxString.clear();
+                        rxDataBuffer->clear();
+                        array.clear();
+                        rxArray.clear();
+                        break;
+                    }
+                    case CMD_DOOR_IS_OPEN: {
 
-                    QMessageBox::warning(this,"Warring","设备检测到盗窃行为！");
-                    QPalette pal = ui->pushButton_alartLed->palette();
-                    pal.setColor( QPalette::Window,QColor(255,0,0) );
-                    ui->pushButton_alartLed->setPalette(pal);
-                    ui->label_stateText->setText("有人盗窃....");
-                    rxString.clear();
-                    rxDataBuffer->clear();
-                    array.clear();
-                    rxArray.clear();
-                    break;
+                        QMessageBox::warning(this,"Warning","下位机反馈清除失败，请关上门！");
+
+                        rxString.clear();
+                        rxDataBuffer->clear();
+                        array.clear();
+                        rxArray.clear();
+
+                        break;
+                    }
 
                 }
             }

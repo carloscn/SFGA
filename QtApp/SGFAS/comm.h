@@ -20,6 +20,6 @@
 #define                     CMD_ID_CONFIRM_YES                  0x05
 #define                     CMD_STOP_WARN                       0x06
 #define                     CMD_RECOVERY_CHECK                  0x07
-
+#define                     CMD_DOOR_IS_OPEN                    0x08
 // linux
 #endif // COMM_H

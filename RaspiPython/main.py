@@ -78,6 +78,7 @@ import threading
 import sys, subprocess, urllib
 
 
+
 #please modify your phone number.
 
 # SIM800 Module
@@ -96,7 +97,7 @@ CMD_ID_CONFIRM_NO		=	0x04
 CMD_ID_CONFIRM_YES		=	0x05
 CMD_ID_STOP_WARN		=   0x06
 CMD_RECOVERY_CHECK		= 	0x07
-
+CMD_DOOR_IS_OPEN		=   0x08
 # Define global value in project
 cmdBuffer = []
 rxBuffer = []
@@ -133,7 +134,7 @@ bool_vibSensor1State = False
 bool_vibSensor2State = False
 bool_vibSensor3State = False
 bool_vibSensorDoorCheck = False
-bool_alarm_signal_remove = True
+bool_enable_alarm_function = True
 bool_door_closed = True
 
 GPIO.setmode( GPIO.BCM )
@@ -242,13 +243,13 @@ def SensorDoorOpenCheckEvent( channel ):
 
 	global bool_vibSensorDoorCheck
 	global global_id_confirm_flag
-	global bool_alarm_signal_remove
+	global bool_enable_alarm_function
 	global alarmCounter
 
 	bool_vibSensorDoorCheck = True
 	print("SYSTEM: Door has been opened! \n")
 	print("SYSTEM: Check the APP cmd state permission.... \n")
-	if bool_alarm_signal_remove == True:
+	if bool_enable_alarm_function == True:
 
 		print("SYSTEM: checked!!")
 		if global_id_confirm_flag == True:
@@ -295,7 +296,7 @@ def CheckTheVibSensorsState() :
 	global bool_vibSensor2State
 	global bool_vibSensor3State
 	global checkSensorThread
-	global bool_alarm_signal_remove
+	global bool_enable_alarm_function
 
 	int_subState = 0
 
@@ -315,9 +316,9 @@ def CheckTheVibSensorsState() :
 		int_subState = int_subState + 1
 		bool_vibSensor3State = False
 	# Any two sensors are actived.
-	if int_subState > 5:
+	if int_subState > 1:
 	        print( "SYSTEM: The vib sensors are enabled, and system checking the APP wether permission..." )
-	if bool_alarm_signal_remove == False:
+	if bool_enable_alarm_function == True:
 		print("SYSTEM : -> APP said YES.... ")
 		print("SYSTEM : The vib sensors are triggered and APP passed it, the alarm behavior start....\n")
 		UartSendCmd( CMD_THEFT_CHECKED )
@@ -439,7 +440,7 @@ def ScanUartDatas( serial ):
 	global bool_id_pass
 	global global_id_confirm_flag
 	global gprsPort
-	global bool_alarm_signal_remove
+	global bool_enable_alarm_function
 	global pygame
 	global alarmCounter
 
@@ -481,17 +482,20 @@ def ScanUartDatas( serial ):
 			rxBuffer = []
 
 		elif cmd_v == CMD_ID_STOP_WARN:
-
-			bool_alarm_signal_remove = False
-			alarmCounter = 0
-			print( "The user cancel the alarm.... \n" )
-			GPIO.output( vibSensorAlarmLight, GPIO.LOW )
-			print( "The AlarmLight closed..... \n" )
-			gprsPort.write( at_cmd_string_hangoutdial )
-			print( "HangoutHost AT CMD has been send.....\n" )
-			pygame.mixer.music.stop()
-			print( "The system has been close the audio..... \n" )
-			rxBuffer = []
+			if CheckTheDoorState() :
+				bool_enable_alarm_function = False
+				alarmCounter = 0
+				print( "The user cancel the alarm.... \n" )
+				GPIO.output( vibSensorAlarmLight, GPIO.LOW )
+				print( "The AlarmLight closed..... \n" )
+				gprsPort.write( at_cmd_string_hangoutdial )
+				print( "HangoutHost AT CMD has been send.....\n" )
+				pygame.mixer.music.stop()
+				print( "The system has been close the audio..... \n" )
+				rxBuffer = []
+			else: 
+				UartSendCmd( CMD_DOOR_IS_OPEN )
+				print( "SYSTEM ：Error, Clear alarm failed! Please close the door!!! \n" )
 
 		elif cmd_v == CMD_ALARM:
 			print("SYSTEM: The APP CMD is tone play. \n")
@@ -500,7 +504,7 @@ def ScanUartDatas( serial ):
 
 		elif cmd_v == CMD_RECOVERY_CHECK:
 			print("SYSTEM: The APP CMD is recovery the check..\n");
-			bool_alarm_signal_remove = True
+			bool_enable_alarm_function = True
 			#end of if
 
 		rxBuffer = []
