@@ -243,8 +243,13 @@ void SafeGuard::readBluetoothDataEvent()
                     }
                     case CMD_DOOR_IS_OPEN: {
 
-                        QMessageBox::warning(this,"Warning","下位机反馈清除失败，请关上门！");
-
+                        QMessageBox::StandardButton reply;
+                        // 弹出身份确认按钮，并获得用户的选择
+                        reply = QMessageBox::question(NULL, "来自下位机的提示", "传感器检测到没有关闭售货机的门，是否强制清除报警状态？", QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+                        // 如果选择Yes 身份确认通过之后，将允许信息发送给树莓派，交给树莓派处理
+                        if( reply == QMessageBox::Yes ) {
+                            SendCmdToRaspi( CMD_FORCE_CLEAR );
+                        }
                         rxString.clear();
                         rxDataBuffer->clear();
                         array.clear();

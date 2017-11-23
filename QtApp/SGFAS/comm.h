@@ -21,5 +21,6 @@
 #define                     CMD_STOP_WARN                       0x06
 #define                     CMD_RECOVERY_CHECK                  0x07
 #define                     CMD_DOOR_IS_OPEN                    0x08
+#define                     CMD_FORCE_CLEAR                     0x09
 // linux
 #endif // COMM_H
