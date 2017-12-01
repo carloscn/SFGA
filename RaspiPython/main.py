@@ -80,12 +80,14 @@ import threading
 import sys, subprocess, urllib
 
 
-
+call_host_phone_number = "13130286058"
 #please modify your phone number.
 
 # SIM800 Module
-at_cmd_string_dialnumber = "ATD+8613130286058\r\n"
+at_cmd_string_dialnumber = "ATD+86"+call_host_phone_number +"\r\n" 
 at_cmd_string_hangoutdial = "ATH\r\n"
+at_cmd_string_sethornmode = "AT+SNFS=1\r\n"
+at_cmd_string_sethornvoice = "AT+CLVL=8\r\n"
 
 # Define a data array.
 # com: 0xAA 0xBB cmd dat1 dat2 dat3 dat4 plo
@@ -521,6 +523,10 @@ def ScanUartDatas( serial ):
 		rxBuffer = []
 		cmd_s = []
 # ____/\______________________________________________ The Function end.
+
+# Init gprs work mode.
+gprsPort.write( at_cmd_string_sethornmode )
+gprsPort.write( at_cmd_string_sethornvoice )
 # Init audio
 pygame.mixer.init()
 # Start thread.
