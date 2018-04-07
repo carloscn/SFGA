@@ -270,6 +270,7 @@ void SafeGuard::bluetoothConnectedEvent()
 {
     // 停止搜寻服务，防止数据阻塞
     discoveryAgent->stop();
+    ui->list->setEnabled(false);
     qDebug() << "The android device has been connected successfully!";
     QMessageBox::information(this,tr("Info"),tr("Successful connection!"));
     ui->pushButton_disconnect->setEnabled(true);
@@ -308,6 +309,7 @@ void SafeGuard::on_pushButton_scan_clicked()
 
 void SafeGuard::on_pushButton_closeDevice_clicked()
 {
+    ui->list->setEnabled(true);
     localDevice->setHostMode(QBluetoothLocalDevice::HostPoweredOff);
     ui->pushButton_closeDevice->setEnabled(false);
     ui->pushButton_openBluetooth->setEnabled(true);
